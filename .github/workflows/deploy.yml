@@ -17,12 +17,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ secrets.REGISTRY }}
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ secrets.DOCKER_REPO_URL}}
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.REGISTRY }}/${{ github.actor }}/image-name:latest .
-          docker push ${{ secrets.REGISTRY }}/${{ github.actor }}/image-name:latest
+          docker build -t ${{ secrets.DOCKER_REPO_URL }}/image-name:latest .
+          docker push ${{ secrets.DOCKER_REPO_URL }}/image-name:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,5 +49,5 @@ jobs:
           ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
             docker stop react_app || true
             docker rm react_app || true
-            docker pull ${{ secrets.REGISTRY }}/${{ github.actor }}/image-name:latest && \
-            docker run -d --name react_app -p 80:80 ${{ secrets.REGISTRY }}/${{ github.actor }}/image-name:latest'
+            docker pull ${{ secrets.DOCKER_REPO_URL}}/image-name:latest && \
+            docker run -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}/image-name:latest'

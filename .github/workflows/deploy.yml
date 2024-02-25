@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - main
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.actor }}/<image-name>:latest
 
 jobs:
 
@@ -16,7 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file Dockerfile.dev --tag docker-react-image:$(date +%s)
+        run: |
+          docker build --file Dockerfile.dev --tag docker-react-image .
+          docker tag docker-react-image:latest ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,4 +47,10 @@ jobs:
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
-        run: ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} "sudo docker-compose up"
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
+            docker pull ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest && \
+            docker stop react_app && \
+            docker rm react_app && \
+            docker run -d --name react_app \
+            -p 80:80 ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest'

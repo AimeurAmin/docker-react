@@ -19,8 +19,8 @@ jobs:
       - name: Login, Build and push Docker image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_REPO_URL }}/image-name:latest .
-          docker push ${{ secrets.DOCKER_REPO_URL }}/image-name:latest
+          docker build -t ${{ secrets.DOCKER_REPO_URL }}:latest .
+          docker push ${{ secrets.DOCKER_REPO_URL }}:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,5 +47,5 @@ jobs:
           ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
             docker stop react_app || true
             docker rm react_app || true
-            docker pull ${{ secrets.DOCKER_REPO_URL}}/image-name:latest && \
-            docker run -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}/image-name:latest'
+            docker pull ${{ secrets.DOCKER_REPO_URL}}:latest && \
+            docker run -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}:latest'

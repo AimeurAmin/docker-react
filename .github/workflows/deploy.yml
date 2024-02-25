@@ -22,9 +22,9 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build --file Dockerfile.dev --tag docker-react-image .
-          docker tag docker-react-image:latest ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest
+          docker tag docker-react-image:latest ${{ secrets.DOCKER_REPO_URL }}:latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest
+          docker push ${{ secrets.DOCKER_REPO_URL }}:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,8 +49,8 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
-            docker pull ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest && \
+            docker pull ${{ secrets.DOCKER_REPO_URL }}:latest && \
             docker stop react_app && \
             docker rm react_app && \
             docker run -d --name react_app \
-            -p 80:80 ${{ secrets.DOCKER_REPO_URL }}/docker-react-image:latest'
+            -p 80:80 ${{ secrets.DOCKER_REPO_URL }}:latest'

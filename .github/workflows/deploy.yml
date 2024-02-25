@@ -49,9 +49,8 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
-            if docker ps -a --format "{{.Names}}" | grep -Eq "^react_app$"; then
-              docker stop react_app && docker rm react_app
-            fi
+            docker stop react_app || true
+            docker rm react_app || true
             docker pull ${{ secrets.DOCKER_REPO_URL }}:latest && \
             docker run -d --name react_app \
             -p 80:80 ${{ secrets.DOCKER_REPO_URL }}:latest'

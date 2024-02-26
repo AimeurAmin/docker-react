@@ -1,8 +1,7 @@
 version: '3'
 services:
   amin:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    image: aminaimeur/docker-react:latest
     ports:
       - '80:80'

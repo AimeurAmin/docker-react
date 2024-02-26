@@ -21,7 +21,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker-compose build
+          docker-compose build --platform linux/arm64
           docker-compose push
 
   deploy:
@@ -50,4 +50,4 @@ jobs:
             docker stop react_app || true
             docker rm react_app || true
             docker pull ${{ secrets.DOCKER_REPO_URL}}:latest && \
-            docker run -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}:latest'
+            docker run --platform linux/arm64 -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}:latest'

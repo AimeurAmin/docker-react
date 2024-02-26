@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build-and-push:
+  build-and-deploy:
     runs-on: self-hosted
 
     steps:
@@ -21,33 +21,6 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker-compose build
-          docker-compose push
-
-  deploy:
-    runs-on: self-hosted
-    needs: build-and-push
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install SSH client
-        run: sudo apt-get install -y openssh-client
-
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-
-      - name: Deploy via SSH
-        run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} '
-            docker stop react_app || true
-            docker rm react_app || true
-            docker pull ${{ secrets.DOCKER_REPO_URL}}:latest && \
-            docker run -d --name react_app -p 80:80 ${{ secrets.DOCKER_REPO_URL}}:latest'
+          docker compose build
+          docker compose push
+          docker compose up -d

@@ -21,6 +21,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          sudo cp -r ~/.nginxssl ~/actions-runner/_work/docker-react/docker-react
           docker compose build
           docker compose push
           docker compose up -d

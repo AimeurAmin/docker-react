@@ -9,6 +9,9 @@ RUN npm run build
 FROM nginx:stable-alpine-slim
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+COPY .nginxssl/certificate.crt /etc/nginx/ssl/
+COPY .nginxssl/private.key /etc/nginx/ssl/
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

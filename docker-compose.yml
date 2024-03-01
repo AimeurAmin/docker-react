@@ -4,4 +4,6 @@ services:
     build: .
     image: aminaimeur/docker-react:latest
     ports:
-      - '80:80'
+      - 80:80
+      - 443:443
+    restart: always

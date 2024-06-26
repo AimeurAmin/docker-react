@@ -10,7 +10,7 @@ const App = () => {
   const [counter, setcounter] = useState(0)
   return (
     <AppContainer>
-      <Typography>Something awesome is coming...</Typography>
+      <Typography>Something awesome is coming... stay tuned ......</Typography>
       <CounterContainer>
         <Typography>{counter}</Typography>
         <Stack direction='row'>
